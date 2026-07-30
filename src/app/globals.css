@@ -1,0 +1,320 @@
+@import "tailwindcss";
+
+:root {
+  --ocean: #0a6b6a;
+  --ocean-deep: #053d3d;
+  --seafoam: #d4f0eb;
+  --lagoon: #1a9b94;
+  --sand: #f6f1e8;
+  --sand-deep: #e8dcc8;
+  --ink: #142424;
+  --coral: #d96b4c;
+  --mist: rgba(255, 255, 255, 0.55);
+  --background: var(--sand);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ocean: var(--ocean);
+  --color-ocean-deep: var(--ocean-deep);
+  --color-seafoam: var(--seafoam);
+  --color-lagoon: var(--lagoon);
+  --color-sand: var(--sand);
+  --color-sand-deep: var(--sand-deep);
+  --color-ink: var(--ink);
+  --color-coral: var(--coral);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.site-body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(26, 155, 148, 0.14), transparent 55%),
+    radial-gradient(900px 500px at 100% 20%, rgba(217, 107, 76, 0.08), transparent 50%),
+    linear-gradient(180deg, #f8f4ec 0%, #f0ebe1 45%, #e9f5f2 100%);
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-body), "Segoe UI", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.site-body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Keep content above grain; never force position on fixed UI (breaks sticky bars/FABs) */
+.site-body > *:not([data-fixed-ui]) {
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.65rem;
+  border-radius: 999px;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--lagoon) 0%, var(--ocean-deep) 100%);
+  color: white;
+  box-shadow: 0 12px 28px rgba(5, 61, 61, 0.28);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 16px 36px rgba(5, 61, 61, 0.35);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.btn-solid-light {
+  background: white;
+  color: var(--ocean-deep);
+  box-shadow: 0 10px 24px rgba(20, 36, 36, 0.1);
+}
+
+.section {
+  padding: 5.5rem 1.25rem;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: clamp(2.1rem, 4.5vw, 3.25rem);
+  margin: 0 0 0.65rem;
+  color: var(--ocean-deep);
+  line-height: 1.1;
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 3.25rem;
+  height: 3px;
+  margin-top: 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lagoon), var(--coral));
+}
+
+.section-title.center::after,
+.section-title.text-center::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-sub {
+  color: rgba(20, 36, 36, 0.68);
+  max-width: 34rem;
+  margin: 0 0 2.5rem;
+  line-height: 1.65;
+  font-size: 1.05rem;
+  font-weight: 300;
+}
+
+.media-card {
+  overflow: hidden;
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 18px 40px rgba(20, 36, 36, 0.08);
+  border: 1px solid rgba(10, 107, 106, 0.08);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease;
+}
+
+.media-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 50px rgba(20, 36, 36, 0.14);
+}
+
+.media-card img {
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.media-card:hover img {
+  transform: scale(1.06);
+}
+
+.glass-nav {
+  background: rgba(246, 241, 232, 0.78);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid rgba(10, 107, 106, 0.1);
+}
+
+.sticky-contact-bar {
+  position: fixed !important;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.admin-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: #f7f4ef;
+}
+
+.admin-card {
+  background: white;
+  border: 1px solid rgba(11, 110, 110, 0.12);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border: 1px solid rgba(11, 110, 110, 0.25);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  background: white;
+  font: inherit;
+}
+
+.textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--ocean-deep);
+}
+
+.hero-zoom {
+  animation: heroZoom 22s ease-in-out infinite alternate;
+}
+
+.float-soft {
+  animation: floatSoft 5s ease-in-out infinite;
+}
+
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes floatSoft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-shell > aside {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .section {
+    padding: 3.25rem 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-body .btn.btn-block-mobile {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-zoom,
+  .float-soft {
+    animation: none;
+  }
+
+  .btn,
+  .media-card,
+  .media-card img {
+    transition: none;
+  }
+}

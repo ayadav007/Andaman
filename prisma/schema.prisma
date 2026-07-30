@@ -1,0 +1,354 @@
+// Andaman Ecstasy — SQLite for local (no Docker).
+// For Hostinger MySQL later: change provider to "mysql" and set DATABASE_URL.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model SiteSettings {
+  id                   Int      @id @default(1)
+  brandName            String   @default("Andaman Ecstasy Pvt Ltd")
+  tagline              String   @default("Let your soul discover Andaman… an island of God…")
+  logoUrl              String?
+  faviconUrl           String?
+  heroHeadline         String   @default("Islands that stay with you")
+  heroSupport          String   @default("Handcrafted journeys across the Andaman & Nicobar Islands.")
+  heroImageUrl         String?
+  ctaPrimaryLabel      String   @default("Explore")
+  ctaPrimaryUrl        String   @default("/destinations")
+  ctaSecondaryLabel    String   @default("Plan my trip")
+  ctaSecondaryUrl      String   @default("/plan-my-trip")
+  whatsappNumber       String   @default("919876543210")
+  callNumber           String   @default("+919876543210")
+  whatsappPrefill      String   @default("Hi Andaman Ecstasy, I would like to plan a trip.")
+  showWhatsappFab      Boolean  @default(true)
+  showCallFab          Boolean  @default(true)
+  alertEmail           String?
+  googleAnalyticsId    String?
+  metaPixelId          String?
+  tripadvisorEmbed     String?
+  mapEmbedUrl          String?
+  companyAddress       String?
+  gstin                String?
+  metaTitle            String?
+  metaDescription      String?
+  leadPopupEnabled     Boolean  @default(true)
+  leadPopupDelaySec    Int      @default(12)
+  leadPopupHeading     String   @default("Plan your Andaman escape — get the best deals")
+  leadPopupPrivacy     String   @default("Andaman Ecstasy assures the privacy of your contact data. We will only use it to reach you about your trip.")
+  leadPopupButtonLabel String   @default("Contact us")
+  // Integrations (secrets stored encrypted with ENCRYPTION_KEY)
+  smtpHost             String?
+  smtpPort             Int      @default(587)
+  smtpUser             String?
+  smtpPassEnc          String?
+  smtpFrom             String?
+  smtpSecure           Boolean  @default(false)
+  razorpayKeyId        String?
+  razorpayKeySecretEnc String?
+  updatedAt            DateTime @updatedAt
+}
+
+model NavItem {
+  id        String      @id @default(cuid())
+  labelEn   String
+  labelHi   String?
+  href      String?
+  sortOrder Int         @default(0)
+  published Boolean     @default(true)
+  columns   NavColumn[]
+}
+
+model NavColumn {
+  id        String    @id @default(cuid())
+  navItemId String
+  navItem   NavItem   @relation(fields: [navItemId], references: [id], onDelete: Cascade)
+  titleEn   String
+  titleHi   String?
+  sortOrder Int       @default(0)
+  links     NavLink[]
+}
+
+model NavLink {
+  id         String    @id @default(cuid())
+  columnId   String
+  column     NavColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  labelEn    String
+  labelHi    String?
+  href       String
+  sortOrder  Int       @default(0)
+}
+
+model HomeSection {
+  id        String        @id @default(cuid())
+  type      String
+  titleEn   String?
+  titleHi   String?
+  subtitleEn String?
+  subtitleHi String?
+  theme     String        @default("light")
+  visible   Boolean       @default(true)
+  sortOrder Int           @default(0)
+  config    String        @default("{}")
+  items     SectionItem[]
+}
+
+model SectionItem {
+  id          String      @id @default(cuid())
+  sectionId   String
+  section     HomeSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  titleEn     String?
+  titleHi     String?
+  subtitleEn  String?
+  imageUrl    String?
+  linkUrl     String?
+  priceLabel  String?
+  videoUrl    String?
+  sortOrder   Int         @default(0)
+}
+
+model StatItem {
+  id        String @id @default(cuid())
+  value     Int
+  suffix    String @default("")
+  labelEn   String
+  labelHi   String?
+  sortOrder Int    @default(0)
+}
+
+model Destination {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  nameEn          String
+  nameHi          String?
+  descriptionEn   String
+  descriptionHi   String?
+  imageUrl        String?
+  mapEmbedUrl     String?
+  lat             Float?
+  lng             Float?
+  metaTitle       String?
+  metaDescription String?
+  published       Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  hotels          Hotel[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Hotel {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  nameEn          String
+  nameHi          String?
+  descriptionEn   String
+  descriptionHi   String?
+  amenities       String        @default("[]")
+  images          String        @default("[]")
+  destinationId   String?
+  destination     Destination?  @relation(fields: [destinationId], references: [id])
+  islandLabel     String?
+  metaTitle       String?
+  metaDescription String?
+  published       Boolean       @default(true)
+  sortOrder       Int           @default(0)
+  rooms           Room[]
+  stays           PackageStay[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Room {
+  id            String        @id @default(cuid())
+  hotelId       String
+  hotel         Hotel         @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  nameEn        String
+  nameHi        String?
+  descriptionEn String?
+  descriptionHi String?
+  bed           String?
+  occupancy     Int           @default(2)
+  priceHint     Int?
+  images        String        @default("[]")
+  sortOrder     Int           @default(0)
+  stays         PackageStay[]
+}
+
+model Package {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  titleEn         String
+  titleHi         String?
+  summaryEn       String
+  summaryHi       String?
+  descriptionEn   String
+  descriptionHi   String?
+  durationNights  Int
+  durationDays    Int
+  priceFrom       Int
+  depositPercent  Int           @default(30)
+  coverImages     String        @default("[]")
+  itineraryJson   String        @default("[]")
+  inclusionsEn    String        @default("")
+  inclusionsHi    String?
+  exclusionsEn    String        @default("")
+  exclusionsHi    String?
+  metaTitle       String?
+  metaDescription String?
+  published       Boolean       @default(true)
+  featured        Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  stays           PackageStay[]
+  bookings        Booking[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model PackageStay {
+  id         String  @id @default(cuid())
+  packageId  String
+  package    Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  hotelId    String
+  hotel      Hotel   @relation(fields: [hotelId], references: [id])
+  roomId     String?
+  room       Room?   @relation(fields: [roomId], references: [id])
+  nightsFrom Int
+  nightsTo   Int
+  sortOrder  Int     @default(0)
+}
+
+model Testimonial {
+  id        String  @id @default(cuid())
+  name      String
+  location  String?
+  quoteEn   String
+  quoteHi   String?
+  rating    Int     @default(5)
+  photoUrl  String?
+  published Boolean @default(true)
+  sortOrder Int     @default(0)
+}
+
+model FaqItem {
+  id        String  @id @default(cuid())
+  questionEn String
+  questionHi String?
+  answerEn  String
+  answerHi  String?
+  published Boolean @default(true)
+  sortOrder Int     @default(0)
+}
+
+model BlogPost {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  titleEn         String
+  titleHi         String?
+  excerptEn       String
+  excerptHi       String?
+  bodyEn          String
+  bodyHi          String?
+  coverUrl        String?
+  category        String?
+  published       Boolean   @default(false)
+  publishedAt     DateTime?
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model LegalPage {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  titleEn         String
+  titleHi         String?
+  bodyEn          String
+  bodyHi          String?
+  metaTitle       String?
+  metaDescription String?
+  updatedAt       DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  alt       String?
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id          String       @id @default(cuid())
+  source      String       @default("popup")
+  name        String
+  email       String
+  phone       String
+  travelDates String?
+  guests      Int?
+  budget      String?
+  message     String?
+  status      String       @default("new")
+  createdAt   DateTime     @default(now())
+  itineraries Itinerary[]
+}
+
+model Booking {
+  id                 String    @id @default(cuid())
+  guestName          String
+  email              String
+  phone              String
+  packageId          String?
+  package            Package?  @relation(fields: [packageId], references: [id])
+  hotelId            String?
+  startDate          String?
+  endDate            String?
+  guests             Int       @default(2)
+  notes              String?
+  status             String    @default("pending")
+  paymentStatus      String    @default("unpaid")
+  amountDue          Int?
+  amountPaid         Int?
+  razorpayOrderId    String?
+  razorpayPaymentId  String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  invoices           Invoice[]
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  number    String   @unique
+  gstin     String?
+  amount    Int
+  taxAmount Int      @default(0)
+  pdfPath   String?
+  issuedAt  DateTime @default(now())
+}
+
+model Itinerary {
+  id           String   @id @default(cuid())
+  guestName    String
+  email        String
+  phone        String?
+  travelStart  String?
+  travelEnd    String?
+  guests       Int      @default(2)
+  leadId       String?
+  lead         Lead?    @relation(fields: [leadId], references: [id])
+  daysJson     String   @default("[]")
+  quoteLinesJson String @default("[]")
+  quoteTotal   Int?
+  validUntil   String?
+  status       String   @default("draft")
+  shareToken   String   @unique @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
