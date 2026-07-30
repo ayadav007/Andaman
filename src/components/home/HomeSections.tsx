@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { AnimatePresence, motion, useInView } from "framer-motion";
+import { AnimatePresence, motion, useInView, type Variants } from "framer-motion";
 import { formatINR, youtubeEmbed } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n";
 import { pickLocale } from "@/lib/i18n";
@@ -362,6 +362,19 @@ function Coverflow({
   const n = items.length;
   const offsets = n === 1 ? [0] : ([-1, 0, 1] as const);
 
+  const cardVariants: Variants = {
+    enter: (d: number) => ({
+      x: (d >= 0 ? 1 : -1) * gap * 1.4,
+      scale: 0.82,
+      opacity: 0,
+    }),
+    exit: (d: number) => ({
+      x: (d >= 0 ? -1 : 1) * gap * 1.4,
+      scale: 0.8,
+      opacity: 0,
+    }),
+  };
+
   const visible = offsets.map((offset) => {
     const virtual = cursor + offset;
     const item = items[((virtual % n) + n) % n];
@@ -392,11 +405,8 @@ function Coverflow({
                   <motion.div
                     key={key}
                     custom={dir}
-                    initial={(d: number) => ({
-                      x: (d >= 0 ? 1 : -1) * gap * 1.4,
-                      scale: 0.82,
-                      opacity: 0,
-                    })}
+                    variants={cardVariants}
+                    initial="enter"
                     animate={{
                       x: offset * gap,
                       scale: isCenter ? 1 : 0.86,
@@ -404,11 +414,7 @@ function Coverflow({
                       zIndex: isCenter ? 3 : 1,
                       y: isCenter ? 0 : 14,
                     }}
-                    exit={(d: number) => ({
-                      x: (d >= 0 ? -1 : 1) * gap * 1.4,
-                      scale: 0.8,
-                      opacity: 0,
-                    })}
+                    exit="exit"
                     transition={{
                       type: "spring",
                       stiffness: 280,
